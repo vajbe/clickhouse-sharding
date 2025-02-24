@@ -1,0 +1,29 @@
+<yandex>
+    <logger>
+        <level>trace</level>
+        <console>true</console>
+    </logger>
+
+    <storage_configuration>
+        <disks>
+            <default>
+                <path>/var/lib/clickhouse/</path>
+            </default>
+        </disks>
+    </storage_configuration>
+
+    <listen_host>0.0.0.0</listen_host>
+    <http_port>8123</http_port>
+    <tcp_port>9000</tcp_port>
+
+    <remote_servers>
+        <example_cluster>
+            <shard>
+                <replica>
+                    <host>clickhouse-node1</host>
+                    <port>9000</port>
+                </replica>
+            </shard>
+        </example_cluster>
+    </remote_servers>
+</yandex>
