@@ -1,22 +1,77 @@
-version: '3.8'
+version: "3.7"
 
 services:
-  clickhouse:
-    image: clickhouse/clickhouse-server:latest
-    container_name: clickhouse-node1
-    restart: always
+
+  ch-master:
+    container_name: ch_master
+    image: yandex/clickhouse-server
+    depends_on:
+      - ch-sub-1
+      - ch-sub-2
+      - ch-sub-3
     ports:
-      - "8123:8123"  # HTTP interface
-      - "9000:9000"  # Native client
+      - 9000:9000
+      - 8123:8123
     volumes:
-      - ./clickhouse/config.xml:/etc/clickhouse-server/config.xml
-      - ./clickhouse/users.xml:/etc/clickhouse-server/users.xml
-      - ./data:/var/lib/clickhouse
-    environment:
-      CLICKHOUSE_DB: test_db
-      CLICKHOUSE_USER: admin
-      CLICKHOUSE_PASSWORD: admin123
-    ulimits:
-      nofile:
-        soft: 262144
-        hard: 262144
+      - type: volume
+        source: ch-master-data
+        target: /var/lib/clickhouse
+      - type: volume
+        source: ch-master-logs
+        target: /var/log/clickhouse-server
+      - ./master-config.xml:/etc/clickhouse-server/config.xml
+
+  ch-sub-1:
+    container_name: ch_sub_1
+    image: yandex/clickhouse-server
+    ports:
+      - 9001:9000
+      - 8124:8123
+    volumes:
+      - type: volume
+        source: ch-sub-1-data
+        target: /var/lib/clickhouse
+      - type: volume
+        source: ch-sub-1-logs
+        target: /var/log/clickhouse-server
+      - ./sub-config.xml:/etc/clickhouse-server/config.xml
+
+  ch-sub-2:
+    container_name: ch_sub_2
+    image: yandex/clickhouse-server
+    ports:
+      - 9002:9000
+      - 8125:8123
+    volumes:
+      - type: volume
+        source: ch-sub-2-data
+        target: /var/lib/clickhouse
+      - type: volume
+        source: ch-sub-2-logs
+        target: /var/log/clickhouse-server
+      - ./sub-config.xml:/etc/clickhouse-server/config.xml
+
+  ch-sub-3:
+    container_name: ch_sub_3
+    image: yandex/clickhouse-server
+    ports:
+      - 9003:9000
+      - 8126:8123
+    volumes:
+      - type: volume
+        source: ch-sub-3-data
+        target: /var/lib/clickhouse
+      - type: volume
+        source: ch-sub-3-logs
+        target: /var/log/clickhouse-server
+      - ./sub-config.xml:/etc/clickhouse-server/config.xml
+
+volumes:
+  ch-master-data:
+  ch-master-logs:
+  ch-sub-1-data:
+  ch-sub-1-logs:
+  ch-sub-2-data:
+  ch-sub-2-logs:
+  ch-sub-3-data:
+  ch-sub-3-logs:
